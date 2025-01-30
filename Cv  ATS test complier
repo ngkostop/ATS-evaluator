@@ -1,0 +1,26 @@
+import pdfplumber
+import re
+
+def test_ats_readability(pdf_path):
+    with pdfplumber.open(pdf_path) as pdf:
+        text = ''
+        for page in pdf.pages:
+            text += page.extract_text()
+    
+    # Check for common ATS issues
+    issues = []
+    if re.search(r'[^\x00-\x7F]+', text):  # Non-ASCII characters
+        issues.append("Contains special characters")
+    if re.search(r'•', text):  # Bullet points
+        issues.append("Contains bullet points")
+    
+    print("ATS Analysis Results:")
+    print("--------------------")
+    print("Extracted Text:")
+    print(text)
+    print("\nPotential Issues:")
+    for issue in issues:
+        print(f"- {issue}")
+
+# Usage
+test_ats_readability("Cv matrix latex.pdf")
